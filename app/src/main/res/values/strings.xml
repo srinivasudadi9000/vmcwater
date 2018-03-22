@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">VMC Water Grievance</string>
+    <string name="app_title">VMC WATER GRIEVANCES</string>
+    <string name="hint_username">Username (AEW-0000)</string>
+    <string name="location">Location</string>
+    <string name="input_password">Password (AEW-0000)</string>
+    <array name="department">
+        <item>RDO</item>
+        <item>Collector</item>
+        <item>Mandal Office</item>
+        <item>Municipal Office</item>
+        <item>Scretratiate Office</item>
+    </array>
+    <string-array name="planets_array">
+        <item>--Select--</item>
+        <item>Redressed</item>
+        <item>Rejected</item>
+
+    </string-array>
+
+</resources>
