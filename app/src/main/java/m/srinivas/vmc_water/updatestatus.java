@@ -34,6 +34,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import org.apache.http.NameValuePair;
@@ -52,18 +54,21 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class updatestatus extends Activity implements View.OnClickListener {
-    TextView application_no, dep_name, officer_name_display, ward_number, locality_name_display, description,updat_logout;
+    TextView application_no, dep_name, officer_name_display, ward_number, locality_name_display, description, updat_logout;
     EditText remarks;
-    ImageView image_display, redress_img_display,back;
+    ImageView image_display, redress_img_display, back, image_display_one, redress_img_display_one, image_display_two, redress_img_display_two;
     Spinner status_spinner;
     SharedPreferences sharedPreferences;
     String userChoosenTask, status_str, response_str = "33", image_str = "notcaptured";
-
+    String lat = "0.0", lat_long = "0.0";
     ProgressDialog progress;
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1;
     Bitmap scaledBitmap = null, bitmap;
     Button update;
-    Bitmap afterEdit = null;
+    Bitmap afterEdit = null, afterEdit_one = null, afterEdit_two = null;
+    ;
+    String captured_image = "others";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +82,12 @@ public class updatestatus extends Activity implements View.OnClickListener {
         locality_name_display = (TextView) findViewById(R.id.locality_name_display);
         description = (TextView) findViewById(R.id.description);
         remarks = (EditText) findViewById(R.id.remarks);
+
+        image_display_one = (ImageView) findViewById(R.id.image_display_one);
+        redress_img_display_one = (ImageView) findViewById(R.id.redress_img_display_one);
+        image_display_two = (ImageView) findViewById(R.id.image_display_two);
+        redress_img_display_two = (ImageView) findViewById(R.id.redress_img_display_two);
+
         image_display = (ImageView) findViewById(R.id.image_display);
         redress_img_display = (ImageView) findViewById(R.id.redress_img_display);
         status_spinner = (Spinner) findViewById(R.id.status_spinner);
@@ -85,6 +96,8 @@ public class updatestatus extends Activity implements View.OnClickListener {
         updat_logout.setOnClickListener(this);
         update.setOnClickListener(this);
         redress_img_display.setOnClickListener(this);
+        redress_img_display_one.setOnClickListener(this);
+        redress_img_display_two.setOnClickListener(this);
         getIntent().getStringExtra("intGrivanceid");
         sharedPreferences = getSharedPreferences("Userinfo", MODE_PRIVATE);
         sharedPreferences.getString("intOfficerid", "");
@@ -146,32 +159,38 @@ public class updatestatus extends Activity implements View.OnClickListener {
                         Location location = gpsTracker.getLocation();
                         if (afterEdit != null) {
                             new updatestatus.upload().execute();
-
-                        }else {
+                        } else {
                             gpsTracker.showSettingsAlert();
                         }
-
                     } else {
                         showalert("Please Check Your Internet Connection", "hai");
                     }
-
                 }
                 break;
             case R.id.redress_img_display:
+                captured_image = "one";
+                selectImage();
+                break;
+            case R.id.redress_img_display_one:
+                captured_image = "two";
+                selectImage();
+                break;
+            case R.id.redress_img_display_two:
+                captured_image = "three";
                 selectImage();
                 break;
             case R.id.back:
                 finish();
                 break;
-            case  R.id.updat_logout:
+            case R.id.updat_logout:
                 SharedPreferences sharedPreferences = getSharedPreferences("Userinfo", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("intUserid", "");
-                editor.putString("username","");
-                editor.putString("user_id","");
+                editor.putString("username", "");
+                editor.putString("user_id", "");
                 editor.putString("userlevel", "");
-                editor.putString("intDepartmentid","");
-                editor.putString("DepartmentName","");
+                editor.putString("intDepartmentid", "");
+                editor.putString("DepartmentName", "");
                 editor.putString("intOfficerid", "");
                 editor.commit();
                 Intent login = new Intent(updatestatus.this, Login.class);
@@ -223,19 +242,20 @@ public class updatestatus extends Activity implements View.OnClickListener {
                         locality_name_display.setText(value.getString("LocalityName"));
                         description.setText(value.getString("GrievanceDesc"));
                         remarks.setText(value.getString("remarks"));
-                        if (value.getString("Status").equals("Pending")){
-                           // update.setVisibility(View.GONE);
-                        }else {
+                        if (value.getString("Status").equals("Pending")) {
+                            // update.setVisibility(View.GONE);
+                        } else {
                             update.setVisibility(View.GONE);
                             remarks.setEnabled(false);
-                            if (value.getString("Status").equals("Redressed")){
+                            if (value.getString("Status").equals("Redressed")) {
                                 status_spinner.setSelection(1);
                                 status_spinner.setEnabled(false);
-                            }else {
+                            } else {
                                 status_spinner.setSelection(2);
                                 status_spinner.setEnabled(false);
                             }
                         }
+                        //
                         image_display.setScaleType(ImageView.ScaleType.FIT_XY);
                         Picasso.with(updatestatus.this)
                                 // .load("http://" + value.getString("GrievancePhotoPath1"))
@@ -247,9 +267,56 @@ public class updatestatus extends Activity implements View.OnClickListener {
                             Picasso.with(updatestatus.this)
                                     // .load("http://" + value.getString("GrievancePhotoPath1"))
                                     .load(value.getString("GrievancePhotoPath1"))
+                                    .networkPolicy(NetworkPolicy.NO_CACHE)
+                                    .memoryPolicy(MemoryPolicy.NO_CACHE)
                                     //this is also optional if some error has occurred in downloading the image this image would be displayed
                                     .into(redress_img_display);
+                        } else {
+                            redress_img_display.setImageDrawable(getResources().getDrawable(R.drawable.dummy));
                         }
+
+
+                        //
+                        image_display_one.setScaleType(ImageView.ScaleType.FIT_XY);
+                        Picasso.with(updatestatus.this)
+                                // .load("http://" + value.getString("GrievancePhotoPath1"))
+                                .load(value.getString("GPhotoPath1"))
+                                //this is also optional if some error has occurred in downloading the image this image would be displayed
+                                .into(image_display_one);
+
+                        if (value.getString("GrievancePhotoPath2").contains(".jpg")) {
+                            redress_img_display_one.setScaleType(ImageView.ScaleType.FIT_XY);
+                            Picasso.with(updatestatus.this)
+                                    // .load("http://" + value.getString("GrievancePhotoPath1"))
+                                    .load(value.getString("GrievancePhotoPath2"))
+                                    .networkPolicy(NetworkPolicy.NO_CACHE)
+                                    .memoryPolicy(MemoryPolicy.NO_CACHE)
+                                    //this is also optional if some error has occurred in downloading the image this image would be displayed
+                                    .into(redress_img_display_one);
+                        } else {
+                            redress_img_display_one.setImageDrawable(getResources().getDrawable(R.drawable.dummy));
+                        }
+
+                        //
+                        image_display_two.setScaleType(ImageView.ScaleType.FIT_XY);
+                        Picasso.with(updatestatus.this)
+                                // .load("http://" + value.getString("GrievancePhotoPath1"))
+                                .load(value.getString("GPhotoPath2"))
+                                //this is also optional if some error has occurred in downloading the image this image would be displayed
+                                .into(image_display_two);
+                        if (value.getString("GrievancePhotoPath3").contains(".jpg")) {
+                            redress_img_display_two.setScaleType(ImageView.ScaleType.FIT_XY);
+                            Picasso.with(updatestatus.this)
+                                    // .load("http://" + value.getString("GrievancePhotoPath1"))
+                                    .load(value.getString("GrievancePhotoPath3"))
+                                    .networkPolicy(NetworkPolicy.NO_CACHE)
+                                    .memoryPolicy(MemoryPolicy.NO_CACHE)
+                                    //this is also optional if some error has occurred in downloading the image this image would be displayed
+                                    .into(redress_img_display_two);
+                        } else {
+                            redress_img_display_two.setImageDrawable(getResources().getDrawable(R.drawable.dummy));
+                        }
+
 
                         //exactstatus = value.getString("Status");
 
@@ -259,33 +326,7 @@ public class updatestatus extends Activity implements View.OnClickListener {
                         editor.putString("App_No", value.getString("App_No"));
                         editor.commit();
 
-/*                        if (exactstatus.equals("Rejected") || exactstatus.equals("Redressed")) {
 
-                            mylinear.setVisibility(View.GONE);
-                            grievance_status.setVisibility(View.VISIBLE);
-                            grievance_Remark.setVisibility(View.VISIBLE);
-                            grievance_phot.setVisibility(View.VISIBLE);
-                            grievance_file2.setVisibility(View.VISIBLE);
-                            grievance_file3.setVisibility(View.VISIBLE);
-                            griev_status.setText(value.getString("Status"));
-
-                            grievance_remarks.setText(value.getString("remarks"));
-                            Picasso.with(updatestatus.this)
-                                    .load("http://" + value.getString("GrievancePhotoPath1"))
-                                    .resize(120, 120)
-                                    //this is also optional if some error has occurred in downloading the image this image would be displayed
-                                    .into(grievance_photo1);
-
-                            SharedPreferences ed = getSharedPreferences("Back", MODE_PRIVATE);
-                            if (ed.getString("button", "").equals("button")) {
-                                showalert("Grievance Status Already Updated Thankyou !!", "notsho");
-                            } else {
-                                //Image Exists!.
-                            }
-                            // uploadImage(remarks.getText().toString());
-                        } else {
-                            mylinear.setVisibility(View.VISIBLE);
-                        } */
                     }
                 } else {
                     // showalert("No Data Found For This Grievance Id", "show");
@@ -350,54 +391,62 @@ public class updatestatus extends Activity implements View.OnClickListener {
     private void onCaptureImageResult(Intent data) {
         Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
 
-    /*  *//*  Uri tempUri = getImageUri(updatestatus.this, thumbnail);
 
-        // CALL THIS METHOD TO GET THE ACTUAL PATH
-        File finalFile = new File(getRealPathFromURI(tempUri));*//*
-        bitmap = (Bitmap) data.getExtras().get("data");
-        // compressImage(finalFile.getAbsolutePath().toString());
-        // ivImage.setImageBitmap(scaledBitmap);
+        if (captured_image.equals("one")) {
+            GPSTracker gpsTracker = new GPSTracker(updatestatus.this);
+            Location location = gpsTracker.getLocation();
+            // String lat = "0.0", lat_long = "0.0";
+            if (location != null) {
+                lat = String.valueOf(location.getLatitude() + "  ");
+                lat_long = String.valueOf(location.getLongitude());
+            }
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String strDate = sdf.format(c.getTime());
 
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+            afterEdit = drawTextToBitmap(updatestatus.this, lat, lat_long, strDate, thumbnail);
+            // bin_photo_img.setMaxWidth(300);
+            //bin_photo_img.setMaxHeight(300);
+            redress_img_display.setScaleType(ImageView.ScaleType.FIT_XY);
+            redress_img_display.setImageBitmap(afterEdit);
+            image_str = "captured";
+        } else if (captured_image.equals("two")) {
+            GPSTracker gpsTracker = new GPSTracker(updatestatus.this);
+            Location location = gpsTracker.getLocation();
+            // String lat = "0.0", lat_long = "0.0";
+            if (location != null) {
+                lat = String.valueOf(location.getLatitude() + "  ");
+                lat_long = String.valueOf(location.getLongitude());
+            }
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String strDate = sdf.format(c.getTime());
 
-        File destination = new File(Environment.getExternalStorageDirectory(),
-                System.currentTimeMillis() + ".jpg");
+            afterEdit_one = drawTextToBitmap(updatestatus.this, lat, lat_long, strDate, thumbnail);
+            // bin_photo_img.setMaxWidth(300);
+            //bin_photo_img.setMaxHeight(300);
+            redress_img_display_one.setScaleType(ImageView.ScaleType.FIT_XY);
+            redress_img_display_one.setImageBitmap(afterEdit_one);
+            image_str = "captured";
+        } else if (captured_image.equals("three")) {
+            GPSTracker gpsTracker = new GPSTracker(updatestatus.this);
+            Location location = gpsTracker.getLocation();
+            // String lat = "0.0", lat_long = "0.0";
+            if (location != null) {
+                lat = String.valueOf(location.getLatitude() + "  ");
+                lat_long = String.valueOf(location.getLongitude());
+            }
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String strDate = sdf.format(c.getTime());
 
-        FileOutputStream fo;
-        try {
-            destination.createNewFile();
-            fo = new FileOutputStream(destination);
-            fo.write(bytes.toByteArray());
-            fo.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            afterEdit_two = drawTextToBitmap(updatestatus.this, lat, lat_long, strDate, thumbnail);
+            // bin_photo_img.setMaxWidth(300);
+            //bin_photo_img.setMaxHeight(300);
+            redress_img_display_two.setScaleType(ImageView.ScaleType.FIT_XY);
+            redress_img_display_two.setImageBitmap(afterEdit_two);
+            image_str = "captured";
         }
-        // capture_img.setMaxWidth(150);
-        //capture_img.setMaxHeight(150);
-        redress_img_display.setScaleType(ImageView.ScaleType.FIT_XY);
-        redress_img_display.setImageBitmap(bitmap);
-        scaledBitmap = bitmap;
-        image_str = "captured";*/
-        GPSTracker gpsTracker = new GPSTracker(updatestatus.this);
-        Location location = gpsTracker.getLocation();
-        String lat = "0.0", lat_long = "0.0";
-        if (location != null) {
-            lat = String.valueOf(location.getLatitude() + "  ");
-            lat_long = String.valueOf(location.getLongitude());
-        }
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String strDate = sdf.format(c.getTime());
-
-        afterEdit = drawTextToBitmap(updatestatus.this, lat, lat_long, strDate, thumbnail);
-        // bin_photo_img.setMaxWidth(300);
-        //bin_photo_img.setMaxHeight(300);
-        redress_img_display.setScaleType(ImageView.ScaleType.FIT_XY);
-        redress_img_display.setImageBitmap(afterEdit);
-        image_str = "captured";
     }
 
     private void onSelectFromGalleryResult(Intent data) {
@@ -405,35 +454,70 @@ public class updatestatus extends Activity implements View.OnClickListener {
         if (data != null) {
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
-
-              /*  Uri tempUri = getImageUri(getApplicationContext(), bitmap);
-
-                File finalFile = new File(getRealPathFromURI(tempUri));
-                //  compressImage(finalFile.getAbsolutePath().toString());*/
-
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
-                File destination = new File(Environment.getExternalStorageDirectory(),
-                        System.currentTimeMillis() + ".jpg");
-
-                FileOutputStream fo;
-                try {
-                    destination.createNewFile();
-                    fo = new FileOutputStream(destination);
-                    fo.write(bytes.toByteArray());
-                    fo.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
+               /* GPSTracker gpsTracker = new GPSTracker(updatestatus.this);
+                Location location = gpsTracker.getLocation();
+                // String lat = "0.0", lat_long = "0.0";
+                if (location != null) {
+                    lat = String.valueOf(location.getLatitude() + "  ");
+                    lat_long = String.valueOf(location.getLongitude());
                 }
-                // capture_img.setMaxWidth(150);
-                //capture_img.setMaxHeight(150);
-                // new MainActivity.JSONParsedoitfast(scaledBitmap,"one").execute();
+                Calendar c = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String strDate = sdf.format(c.getTime());
+
+                afterEdit = drawTextToBitmap(updatestatus.this, lat, lat_long, strDate, bitmap);
+                // bin_photo_img.setMaxWidth(300);
+                //bin_photo_img.setMaxHeight(300);
                 redress_img_display.setScaleType(ImageView.ScaleType.FIT_XY);
-                scaledBitmap = bitmap;
-                redress_img_display.setImageBitmap(bitmap);
-                image_str = "captured";
+                redress_img_display.setImageBitmap(afterEdit);
+                image_str = "captured";*/
+                if (captured_image.equals("one")) {
+                    GPSTracker gpsTracker = new GPSTracker(updatestatus.this);
+                    Location location = gpsTracker.getLocation();
+
+                    if (location != null) {
+                        lat = String.valueOf(location.getLatitude() + "  ");
+                        lat_long = String.valueOf(location.getLongitude());
+                    }
+                    Calendar c = Calendar.getInstance();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String strDate = sdf.format(c.getTime());
+                    afterEdit = drawTextToBitmap(updatestatus.this, lat, lat_long, strDate, bitmap);
+                    redress_img_display.setScaleType(ImageView.ScaleType.FIT_XY);
+                    redress_img_display.setImageBitmap(afterEdit);
+                    image_str = "selected";
+                } else if (captured_image.equals("two")) {
+                    GPSTracker gpsTracker = new GPSTracker(updatestatus.this);
+                    Location location = gpsTracker.getLocation();
+
+                    if (location != null) {
+                        lat = String.valueOf(location.getLatitude() + "  ");
+                        lat_long = String.valueOf(location.getLongitude());
+                    }
+                    Calendar c = Calendar.getInstance();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String strDate = sdf.format(c.getTime());
+                    afterEdit_one = drawTextToBitmap(updatestatus.this, lat, lat_long, strDate, bitmap);
+                    redress_img_display_one.setScaleType(ImageView.ScaleType.FIT_XY);
+                    redress_img_display_one.setImageBitmap(afterEdit_one);
+                    image_str = "selected";
+                } else if (captured_image.equals("three")) {
+                    GPSTracker gpsTracker = new GPSTracker(updatestatus.this);
+                    Location location = gpsTracker.getLocation();
+
+                    if (location != null) {
+                        lat = String.valueOf(location.getLatitude() + "  ");
+                        lat_long = String.valueOf(location.getLongitude());
+                    }
+                    Calendar c = Calendar.getInstance();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String strDate = sdf.format(c.getTime());
+                    afterEdit_two = drawTextToBitmap(updatestatus.this, lat, lat_long, strDate, bitmap);
+                    redress_img_display_two.setScaleType(ImageView.ScaleType.FIT_XY);
+                    redress_img_display_two.setImageBitmap(afterEdit_two);
+                    image_str = "selected";
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -467,11 +551,11 @@ public class updatestatus extends Activity implements View.OnClickListener {
 
             GPSTracker gpsTracker = new GPSTracker(updatestatus.this);
             Location location = gpsTracker.getLocation();
-            String lat = "0.0", lat_long = "0.0";
+            /*String lat = "0.0", lat_long = "0.0";
             if (location != null) {
                 lat = String.valueOf(location.getLatitude() + "  ");
                 lat_long = String.valueOf(location.getLongitude());
-            }
+            }*/
             nameValuePairs.add(new BasicNameValuePair("intGrivanceid", getIntent().getStringExtra("intGrivanceid")));
             nameValuePairs.add(new BasicNameValuePair("App_No", application_no.getText().toString()));
             nameValuePairs.add(new BasicNameValuePair("Status", status_str));
@@ -479,9 +563,24 @@ public class updatestatus extends Activity implements View.OnClickListener {
             nameValuePairs.add(new BasicNameValuePair("GLatitude", lat));
             nameValuePairs.add(new BasicNameValuePair("GLangitude", lat_long));
             nameValuePairs.add(new BasicNameValuePair("intOfficerid", sharedPreferences.getString("intOfficerid", "")));
-            nameValuePairs.add(new BasicNameValuePair("GrievancePhotoFile1", "file"));
-            nameValuePairs.add(new BasicNameValuePair("GrievancePhotoPath1", getStringImage(afterEdit)));
-
+            nameValuePairs.add(new BasicNameValuePair("GrievancePhotoFile1", "file1"));
+            nameValuePairs.add(new BasicNameValuePair("GrievancePhotoFile2", "file2"));
+            nameValuePairs.add(new BasicNameValuePair("GrievancePhotoFile3", "file3"));
+            if (afterEdit == null) {
+                nameValuePairs.add(new BasicNameValuePair("GrievancePhotoPath1", "sdfsd"));
+            } else {
+                nameValuePairs.add(new BasicNameValuePair("GrievancePhotoPath1", getStringImage(afterEdit)));
+            }
+            if (afterEdit_one == null) {
+                nameValuePairs.add(new BasicNameValuePair("GrievancePhotoPath2", "dasdf"));
+            } else {
+                nameValuePairs.add(new BasicNameValuePair("GrievancePhotoPath2", getStringImage(afterEdit_one)));
+            }
+            if (afterEdit_two == null) {
+                nameValuePairs.add(new BasicNameValuePair("GrievancePhotoPath3", "dsdf"));
+            } else {
+                nameValuePairs.add(new BasicNameValuePair("GrievancePhotoPath3", getStringImage(afterEdit_two)));
+            }
 
             json = JSONParser.makeServiceCall("http://www.vmc103.org/Water/UpdateStatusofGreivance.aspx", 2, nameValuePairs);
 
@@ -503,8 +602,6 @@ public class updatestatus extends Activity implements View.OnClickListener {
                         showalert("Server Busy At This Moment !!", "hai");
                     }
                 }
-
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -539,6 +636,7 @@ public class updatestatus extends Activity implements View.OnClickListener {
         // show it
         alertDialog.show();
     }
+
     public Bitmap drawTextToBitmap(Context mContext, String lat, String longitude, String cdate, Bitmap bitmap) {
         try {
             String mText = "lat: " + lat + "long: " + longitude;

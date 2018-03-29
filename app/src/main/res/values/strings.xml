@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">VMC Water Grievance</string>
     <string name="app_title">VMC WATER GRIEVANCES</string>
-    <string name="hint_username">Username (AEW-0000)</string>
+    <string name="hint_username">Username</string>
     <string name="location">Location</string>
-    <string name="input_password">Password (AEW-0000)</string>
+    <string name="input_password">Password</string>
     <array name="department">
         <item>RDO</item>
         <item>Collector</item>

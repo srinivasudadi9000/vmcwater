@@ -325,7 +325,7 @@
                         android:layout_width="5dp"
                         android:gravity="left"
                         android:padding="8dp"
-                        android:text="Photo : "
+                        android:text="Photo 1: "
                         android:textColor="#000000"
                         android:textSize="14dp" />
 
@@ -353,7 +353,7 @@
                         android:layout_width="5dp"
                         android:gravity="left"
                         android:padding="8dp"
-                        android:text="Redressed Photo : "
+                        android:text="Redressed Photo 1: "
                         android:textColor="#000000"
                         android:textSize="14dp" />
 
@@ -370,7 +370,120 @@
                         android:textSize="14dp"
                         android:textStyle="normal" />
                 </TableRow>
+                <TableRow
+                    android:id="@+id/tr_42"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/border">
 
+                    <TextView
+                        android:layout_width="5dp"
+                        android:gravity="left"
+                        android:padding="8dp"
+                        android:text="Photo 2: "
+                        android:textColor="#000000"
+                        android:textSize="14dp" />
+
+                    <ImageView
+                        android:id="@+id/image_display_one"
+                        android:layout_height="100dp"
+                        android:layout_weight="1.2"
+                        android:background="@drawable/border"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:src="@drawable/dummy"
+                        android:text=""
+                        android:textColor="#000000"
+                        android:textSize="14dp"
+                        android:textStyle="normal" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/tr_422"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/border">
+
+                    <TextView
+                        android:layout_width="5dp"
+                        android:gravity="left"
+                        android:padding="8dp"
+                        android:text="Redressed Photo 2: "
+                        android:textColor="#000000"
+                        android:textSize="14dp" />
+
+                    <ImageView
+                        android:id="@+id/redress_img_display_one"
+                        android:layout_height="100dp"
+                        android:layout_weight="1.2"
+                        android:background="@drawable/border"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:src="@drawable/dummy"
+                        android:text=""
+                        android:textColor="#000000"
+                        android:textSize="14dp"
+                        android:textStyle="normal" />
+                </TableRow>
+                <TableRow
+                    android:id="@+id/tr_43"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/border">
+
+                    <TextView
+                        android:layout_width="5dp"
+                        android:gravity="left"
+                        android:padding="8dp"
+                        android:text="Photo  3: "
+                        android:textColor="#000000"
+                        android:textSize="14dp" />
+
+                    <ImageView
+                        android:id="@+id/image_display_two"
+                        android:layout_height="100dp"
+                        android:layout_weight="1.2"
+                        android:background="@drawable/border"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:src="@drawable/dummy"
+                        android:text=""
+                        android:textColor="#000000"
+                        android:textSize="14dp"
+                        android:textStyle="normal" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/tr_433"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/border">
+
+                    <TextView
+                        android:layout_width="5dp"
+                        android:gravity="left"
+                        android:padding="8dp"
+                        android:text="Redressed Photo 3: "
+                        android:textColor="#000000"
+                        android:textSize="14dp" />
+
+                    <ImageView
+                        android:id="@+id/redress_img_display_two"
+                        android:layout_height="100dp"
+                        android:layout_weight="1.2"
+                        android:background="@drawable/border"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:src="@drawable/dummy"
+                        android:text=""
+                        android:textColor="#000000"
+                        android:textSize="14dp"
+                        android:textStyle="normal" />
+                </TableRow>
                 <TableRow
                     android:id="@+id/tr_1"
                     android:layout_width="match_parent"

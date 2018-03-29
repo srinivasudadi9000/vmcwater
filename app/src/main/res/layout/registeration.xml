@@ -156,13 +156,63 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.4"
-                    android:text="Image :"
+                    android:text="Image One :"
                     android:textColor="@color/black"
                     android:textSize="16dp" />
 
                 <ImageView
                     android:src="@drawable/dummy"
                     android:id="@+id/capture_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight=".6"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.4"
+                    android:text="Image Two:"
+                    android:textColor="@color/black"
+                    android:textSize="16dp" />
+
+                <ImageView
+                    android:src="@drawable/dummy"
+                    android:id="@+id/capture_img_two"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight=".6"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.4"
+                    android:text="Image Three :"
+                    android:textColor="@color/black"
+                    android:textSize="16dp" />
+
+                <ImageView
+                    android:src="@drawable/dummy"
+                    android:id="@+id/capture_img_three"
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:layout_marginBottom="2dp"

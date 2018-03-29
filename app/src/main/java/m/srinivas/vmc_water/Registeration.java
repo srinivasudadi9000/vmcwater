@@ -63,7 +63,7 @@ import static android.content.ContentValues.TAG;
 
 public class Registeration extends Activity implements View.OnClickListener {
     TextView title_tv, officer_name, depart_name;
-    ImageView back_img, capture_img;
+    ImageView back_img, capture_img, capture_img_two, capture_img_three;
     Spinner department_spinner, ward_spinner;
     ArrayList<Department> departments;
     ArrayList<Ward> wards;
@@ -71,13 +71,15 @@ public class Registeration extends Activity implements View.OnClickListener {
     ArrayList<String> dep, ward;
     String array[] = {"asdlfk", "dsd"};
     SharedPreferences sharedPreferences;
-    String userChoosenTask, depart_str, ward_str, ward_no_str, image_str = "notcaptured", response_str = "dadi";
+    String userChoosenTask, depart_str, ward_str, ward_no_str, image_str = "notcaptured", image_str_two = "notcaptured",
+            image_str_three = "notcaptured", response_str = "dadi", captured_image = "others";
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1;
     Bitmap scaledBitmap = null, bitmap;
     Button submit;
     ProgressDialog progress, progress_before;
     EditText input_location, input_des;
-    Bitmap afterEdit = null;
+    Bitmap afterEdit = null, afterEdit_one = null, afterEdit_two = null;
+    String lat = "0.0", lat_long = "0.0";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +94,10 @@ public class Registeration extends Activity implements View.OnClickListener {
         back_img = (ImageView) findViewById(R.id.back_img);
         capture_img = (ImageView) findViewById(R.id.capture_img);
         capture_img.setOnClickListener(this);
+        capture_img_two = (ImageView) findViewById(R.id.capture_img_two);
+        capture_img_two.setOnClickListener(this);
+        capture_img_three = (ImageView) findViewById(R.id.capture_img_three);
+        capture_img_three.setOnClickListener(this);
         back_img.setOnClickListener(this);
         submit.setOnClickListener(this);
         title_tv.setText("Water Grievance Registration");
@@ -161,6 +167,15 @@ public class Registeration extends Activity implements View.OnClickListener {
                 finish();
                 break;
             case R.id.capture_img:
+                captured_image = "one";
+                selectImage();
+                break;
+            case R.id.capture_img_two:
+                captured_image = "two";
+                selectImage();
+                break;
+            case R.id.capture_img_three:
+                captured_image = "three";
                 selectImage();
                 break;
             case R.id.submit:
@@ -344,53 +359,61 @@ public class Registeration extends Activity implements View.OnClickListener {
 
     private void onCaptureImageResult(Intent data) {
         Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-        GPSTracker gpsTracker = new GPSTracker(Registeration.this);
-        Location location = gpsTracker.getLocation();
-        String lat = "0.0", lat_long = "0.0";
-        if (location != null) {
-            lat = String.valueOf(location.getLatitude() + "  ");
-            lat_long = String.valueOf(location.getLongitude());
+        if (captured_image.equals("one")){
+            GPSTracker gpsTracker = new GPSTracker(Registeration.this);
+            Location location = gpsTracker.getLocation();
+
+            if (location != null) {
+                lat = String.valueOf(location.getLatitude() + "  ");
+                lat_long = String.valueOf(location.getLongitude());
+            }
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String strDate = sdf.format(c.getTime());
+
+            afterEdit = drawTextToBitmap(Registeration.this, lat, lat_long, strDate, thumbnail);
+            // bin_photo_img.setMaxWidth(300);
+            //bin_photo_img.setMaxHeight(300);
+            capture_img.setScaleType(ImageView.ScaleType.FIT_XY);
+            capture_img.setImageBitmap(afterEdit);
+            image_str = "selected";
+        }else if (captured_image.equals("two")){
+            GPSTracker gpsTracker = new GPSTracker(Registeration.this);
+            Location location = gpsTracker.getLocation();
+
+            if (location != null) {
+                lat = String.valueOf(location.getLatitude() + "  ");
+                lat_long = String.valueOf(location.getLongitude());
+            }
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String strDate = sdf.format(c.getTime());
+
+            afterEdit_one = drawTextToBitmap(Registeration.this, lat, lat_long, strDate, thumbnail);
+            // bin_photo_img.setMaxWidth(300);
+            //bin_photo_img.setMaxHeight(300);
+            capture_img_two.setScaleType(ImageView.ScaleType.FIT_XY);
+            capture_img_two.setImageBitmap(afterEdit_one);
+            image_str = "selected";
+        }else if (captured_image.equals("three")){
+            GPSTracker gpsTracker = new GPSTracker(Registeration.this);
+            Location location = gpsTracker.getLocation();
+
+            if (location != null) {
+                lat = String.valueOf(location.getLatitude() + "  ");
+                lat_long = String.valueOf(location.getLongitude());
+            }
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String strDate = sdf.format(c.getTime());
+
+            afterEdit_two = drawTextToBitmap(Registeration.this, lat, lat_long, strDate, thumbnail);
+            // bin_photo_img.setMaxWidth(300);
+            //bin_photo_img.setMaxHeight(300);
+            capture_img_three.setScaleType(ImageView.ScaleType.FIT_XY);
+            capture_img_three.setImageBitmap(afterEdit_two);
+            image_str = "selected";
         }
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String strDate = sdf.format(c.getTime());
-
-        afterEdit = drawTextToBitmap(Registeration.this, lat, lat_long, strDate, thumbnail);
-        // bin_photo_img.setMaxWidth(300);
-        //bin_photo_img.setMaxHeight(300);
-        capture_img.setScaleType(ImageView.ScaleType.FIT_XY);
-        capture_img.setImageBitmap(afterEdit);
-        image_str = "selected";
-     /* *//*  Uri tempUri = getImageUri(updatestatus.this, thumbnail);
-
-        // CALL THIS METHOD TO GET THE ACTUAL PATH
-        File finalFile = new File(getRealPathFromURI(tempUri));*//*
-        bitmap = (Bitmap) data.getExtras().get("data");
-        // compressImage(finalFile.getAbsolutePath().toString());
-        // ivImage.setImageBitmap(scaledBitmap);
-
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
-
-        File destination = new File(Environment.getExternalStorageDirectory(),
-                System.currentTimeMillis() + ".jpg");
-
-        FileOutputStream fo;
-        try {
-            destination.createNewFile();
-            fo = new FileOutputStream(destination);
-            fo.write(bytes.toByteArray());
-            fo.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // capture_img.setMaxWidth(150);
-        //capture_img.setMaxHeight(150);
-        capture_img.setScaleType(ImageView.ScaleType.FIT_XY);
-        capture_img.setImageBitmap(bitmap);
-        scaledBitmap = bitmap;*/
 
     }
 
@@ -400,33 +423,53 @@ public class Registeration extends Activity implements View.OnClickListener {
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
 
-              /*  Uri tempUri = getImageUri(getApplicationContext(), bitmap);
 
-                File finalFile = new File(getRealPathFromURI(tempUri));
-                //  compressImage(finalFile.getAbsolutePath().toString());*/
+                if (captured_image.equals("one")) {
+                    GPSTracker gpsTracker = new GPSTracker(Registeration.this);
+                    Location location = gpsTracker.getLocation();
 
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
-                File destination = new File(Environment.getExternalStorageDirectory(),
-                        System.currentTimeMillis() + ".jpg");
+                    if (location != null) {
+                        lat = String.valueOf(location.getLatitude() + "  ");
+                        lat_long = String.valueOf(location.getLongitude());
+                    }
+                    Calendar c = Calendar.getInstance();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String strDate = sdf.format(c.getTime());
+                    afterEdit = drawTextToBitmap(Registeration.this, lat, lat_long, strDate, bitmap);
+                    capture_img.setScaleType(ImageView.ScaleType.FIT_XY);
+                    capture_img.setImageBitmap(afterEdit);
+                    image_str = "selected";
+                } else if (captured_image.equals("two")) {
+                    GPSTracker gpsTracker = new GPSTracker(Registeration.this);
+                    Location location = gpsTracker.getLocation();
 
-                FileOutputStream fo;
-                try {
-                    destination.createNewFile();
-                    fo = new FileOutputStream(destination);
-                    fo.write(bytes.toByteArray());
-                    fo.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    if (location != null) {
+                        lat = String.valueOf(location.getLatitude() + "  ");
+                        lat_long = String.valueOf(location.getLongitude());
+                    }
+                    Calendar c = Calendar.getInstance();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String strDate = sdf.format(c.getTime());
+                    afterEdit_one = drawTextToBitmap(Registeration.this, lat, lat_long, strDate, bitmap);
+                    capture_img_two.setScaleType(ImageView.ScaleType.FIT_XY);
+                    capture_img_two.setImageBitmap(afterEdit_one);
+                    image_str = "selected";
+                } else if (captured_image.equals("three")) {
+                    GPSTracker gpsTracker = new GPSTracker(Registeration.this);
+                    Location location = gpsTracker.getLocation();
+
+                    if (location != null) {
+                        lat = String.valueOf(location.getLatitude() + "  ");
+                        lat_long = String.valueOf(location.getLongitude());
+                    }
+                    Calendar c = Calendar.getInstance();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String strDate = sdf.format(c.getTime());
+                    afterEdit_two = drawTextToBitmap(Registeration.this, lat, lat_long, strDate, bitmap);
+                    capture_img_three.setScaleType(ImageView.ScaleType.FIT_XY);
+                    capture_img_three.setImageBitmap(afterEdit_two);
+                    image_str = "selected";
                 }
-                // capture_img.setMaxWidth(150);
-                //capture_img.setMaxHeight(150);
-                // new MainActivity.JSONParsedoitfast(scaledBitmap,"one").execute();
-                capture_img.setScaleType(ImageView.ScaleType.FIT_XY);
-                scaledBitmap = bitmap;
-                capture_img.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -460,11 +503,11 @@ public class Registeration extends Activity implements View.OnClickListener {
         protected JSONObject doInBackground(String... arg0) {
             GPSTracker gpsTracker = new GPSTracker(Registeration.this);
             Location location = gpsTracker.getLocation();
-            String lat = "0.0", lat_long = "0.0";
+            /*String lat = "0.0", lat_long = "0.0";
             if (location != null) {
                 lat = String.valueOf(location.getLatitude() + "  ");
                 lat_long = String.valueOf(location.getLongitude());
-            }
+            }*/
             nameValuePairs = new ArrayList<NameValuePair>();
             nameValuePairs.add(new BasicNameValuePair("intWardid", ward_str));
             nameValuePairs.add(new BasicNameValuePair("intDepartmentid", depart_str));
@@ -474,9 +517,21 @@ public class Registeration extends Activity implements View.OnClickListener {
             nameValuePairs.add(new BasicNameValuePair("GBLatitude", lat));
             nameValuePairs.add(new BasicNameValuePair("GBLangitude", lat_long));
             nameValuePairs.add(new BasicNameValuePair("intOfficerid", sharedPreferences.getString("intOfficerid", "")));
-            nameValuePairs.add(new BasicNameValuePair("GPhotoName", "file"));
-            nameValuePairs.add(new BasicNameValuePair("GPhotoPath", getStringImage(afterEdit)));
 
+            nameValuePairs.add(new BasicNameValuePair("GPhotoName", "GPhotoName"));
+            nameValuePairs.add(new BasicNameValuePair("GPhotoPath", getStringImage(afterEdit)));
+            nameValuePairs.add(new BasicNameValuePair("GPhotoName1", "GPhotoName2"));
+            if (afterEdit_one == null) {
+                nameValuePairs.add(new BasicNameValuePair("GPhotoPath1", "nullImage"));
+            } else {
+                nameValuePairs.add(new BasicNameValuePair("GPhotoPath1", getStringImage(afterEdit_one)));
+            }
+            nameValuePairs.add(new BasicNameValuePair("GPhotoName2", "GPhotoName3"));
+            if (afterEdit_two == null) {
+                nameValuePairs.add(new BasicNameValuePair("GPhotoPath2", "nullImage"));
+            } else {
+                nameValuePairs.add(new BasicNameValuePair("GPhotoPath2", getStringImage(afterEdit_two)));
+            }
 
             json = JSONParser.makeServiceCall("http://www.vmc103.org/Water/InsertofGreivance.aspx", 2, nameValuePairs);
 
